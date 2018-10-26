@@ -19,7 +19,10 @@ package hello;
  *
  * @author jejkal
  */
+import edu.kit.datamanager.messaging.client.configuration.ConsumerBinding;
+import java.util.Arrays;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -31,6 +34,9 @@ public class Runner implements CommandLineRunner{
   private final Receiver receiver;
   private final ConfigurableApplicationContext context;
 
+  @Autowired
+  private ConsumerBinding[] consumerBindings;
+
   public Runner(Receiver receiver, RabbitTemplate rabbitTemplate,
           ConfigurableApplicationContext context){
     this.receiver = receiver;
@@ -40,6 +46,7 @@ public class Runner implements CommandLineRunner{
 
   @Override
   public void run(String... args) throws Exception{
+    System.out.println("BINDING " + Arrays.asList(consumerBindings));
     System.out.println("Receiving message...");
     System.out.println(rabbitTemplate.receive("myqueue2", 100000));
     //receiver.getLatch().await(100000, TimeUnit.MILLISECONDS);

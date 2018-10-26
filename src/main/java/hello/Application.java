@@ -15,6 +15,7 @@
  */
 package hello;
 
+import edu.kit.datamanager.service.IMessagingService;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -29,12 +30,14 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  *
  * @author jejkal
  */
 @SpringBootApplication
+@ComponentScan({"edu.kit.datamanager.messaging.client.configuration", "hello"})
 public class Application{
 
   @Bean
@@ -69,11 +72,6 @@ public class Application{
 
   public static void main(String[] args) throws InterruptedException{
     SpringApplication.run(Application.class, args);
-    //How to launch
-//   java \
-//-cp fat_app.jar \
-//-Dloader.path=<path_to_your_additional_jars> \
-//org.springframework.boot.loader.PropertiesLauncher
   }
 
 }

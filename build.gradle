@@ -31,13 +31,17 @@ targetCompatibility = 1.8
 
 dependencies {
    compile("org.springframework.boot:spring-boot-starter-amqp")
+   //compile("org.springframework.boot:spring-boot-starter-actuator")
    compile("edu.kit.datamanager:service-base:0.1"){
-      // exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
-      // exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
-      // exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
-      // exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
-      // exclude group: 'com.github.fge'
-      exclude group: '*'
+//       exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+//       exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
+//       exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
+//       exclude group: 'org.springframework.boot', module: 'spring-boot-starter-data-jpa'
+//       exclude group: 'com.github.fge'
+    //  exclude group: '*'
    }
+   
+   compileOnly('org.projectlombok:lombok')
+
    testCompile("junit:junit")
 }
