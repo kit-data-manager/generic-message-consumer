@@ -1,0 +1,23 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+if (!hasProperty('mainClass')) {
+   ext.mainClass = ''
+}
+
+repositories {
+   mavenLocal() 
+   mavenCentral()
+}
+
+dependencies {
+   compileOnly('edu.kit.datamanager:generic-message-consumer:0.1.0')
+   compileOnly("org.slf4j:slf4j-api:1.7.25")
+   compileOnly("ch.qos.logback:logback-classic:1.2.3")
+   compile("edu.kit.datamanager:service-base:0.1"){
+      exclude group: '*'
+   }
+   testCompile("junit:junit")
+}

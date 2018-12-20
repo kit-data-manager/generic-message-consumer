@@ -16,16 +16,33 @@
 package edu.kit.datamanager.messaging.client.configuration;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
+ * Consumer binding used to configure queue and routing keys used to receive
+ * messages from a topic exchange. All configuration keys are assumed to be
+ * located below repo.messaging.binding
  *
  * @author jejkal
  */
+@Component
 @Data
 public class ConsumerBinding{
 
-  private String topic;
+  /**
+   * The topic exchange to connect to.
+   */
+  @Value("${repo.messaging.binding.exchange:repository_events}")
+  private String exchange;
+  /**
+   * The queue name used to receive messages from the configured exchange.
+   */
   private String queue;
+  /**
+   * A list of routing keys qualifying a message to be queued in the configured
+   * queue.
+   */
   private String[] routingKeys;
 
 }

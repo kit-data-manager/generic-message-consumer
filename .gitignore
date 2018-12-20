@@ -1,3 +1,6 @@
 /build/
 /.gradle/
 /config/
+/sample-handler/.gradle/
+/sample-handler/.nb-gradle/
+/sample-handler/build/
