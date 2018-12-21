@@ -31,8 +31,17 @@ public class LoggingMessageHandler implements IMessageHandler{
   private static final Logger LOGGER = LoggerFactory.getLogger(LoggingMessageHandler.class);
 
   @Override
-  public void handle(BasicMessage message){
+  public RESULT handle(BasicMessage message){
     LOGGER.debug("Successfully received message {}.", message);
+    //Reject message in order to preserve message if another, misconfigured handler is used
+    //If RESULT.SUCCEEDED is returned, the message is assumed to be processed properly.
+    return RESULT.REJECTED;
+  }
+
+  @Override
+  public boolean configure(){
+    //no configuration necessary
+    return true;
   }
 
 }
