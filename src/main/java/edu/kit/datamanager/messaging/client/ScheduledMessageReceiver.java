@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -49,9 +50,14 @@ public class ScheduledMessageReceiver{
   private final List<IMessageHandler> endorsedHandlers = new ArrayList<>();
   private boolean INITIALIZED = false;
 
-  public ScheduledMessageReceiver(IMessageHandler[] messageHandlers, RabbitTemplate rabbitTemplate){
+  @Autowired
+  public ScheduledMessageReceiver(Optional<IMessageHandler[]> messageHandlers, RabbitTemplate rabbitTemplate){
     this.rabbitTemplate = rabbitTemplate;
-    this.messageHandlers = messageHandlers;
+    if(messageHandlers.isPresent()){
+      this.messageHandlers = messageHandlers.get();
+    } else{
+      this.messageHandlers = null;
+    }
 
   }
 
@@ -61,7 +67,7 @@ public class ScheduledMessageReceiver{
   @Scheduled(fixedRateString = "${repo.schedule.rate}")
   public void receiveNextMessage(){
     if(messageHandlers == null){
-      LOGGER.info("No message handlers registered. Skip receiving any messages.");
+      LOGGER.trace("No message handlers registered. Skip receiving all messages.");
       return;
     }
 
