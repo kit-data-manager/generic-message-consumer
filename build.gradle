@@ -9,6 +9,10 @@ buildscript {
    }
 }
 
+plugins { 
+   id 'io.franzbecker.gradle-lombok' version '1.14'
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
@@ -46,7 +50,10 @@ dependencies {
       exclude group: '*'
    }
    
-   compileOnly('org.projectlombok:lombok')
-
    testCompile("junit:junit")
+}
+
+lombok {
+   version = '1.18.4'
+   sha256 = ""
 }
