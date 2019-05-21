@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.support.PendingConfirm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -49,6 +48,7 @@ public class ScheduledMessageReceiver{
   private IMessageHandler[] messageHandlers;
   private final List<IMessageHandler> endorsedHandlers = new ArrayList<>();
   private boolean INITIALIZED = false;
+  private boolean NO_HANDLER_WARNING_EMITTED = false;
 
   @Autowired
   public ScheduledMessageReceiver(Optional<IMessageHandler[]> messageHandlers, RabbitTemplate rabbitTemplate){
@@ -67,7 +67,10 @@ public class ScheduledMessageReceiver{
   @Scheduled(fixedRateString = "${repo.schedule.rate}")
   public void receiveNextMessage(){
     if(messageHandlers == null){
-      LOGGER.trace("No message handlers registered. Skip receiving all messages.");
+      if(!NO_HANDLER_WARNING_EMITTED){
+        LOGGER.warn("No message handlers registered. Skip receiving all messages.");
+        NO_HANDLER_WARNING_EMITTED = true;
+      }
       return;
     }
 
@@ -124,6 +127,17 @@ public class ScheduledMessageReceiver{
     }
   }
 
+  /**
+   * Preserve messages that could not be processed by a certain handler. The
+   * messages are written into a textfile in the current folder and can be
+   * processed later separately.
+   *
+   * @param handlerIdentifier The handler which failed to process the message.
+   * @param message The message failed to be processed.
+   *
+   * @return TRUE if the message could be preserved (and can be assumed as
+   * 'handled' in some sense), FALSE otherwise.
+   */
   private boolean preserveUnhandledMessage(String handlerIdentifier, BasicMessage message){
     boolean result = false;
     LOGGER.warn("Preserving message {} for handler {}. Writing new entry to failed_message_handles.csv.", message, handlerIdentifier);

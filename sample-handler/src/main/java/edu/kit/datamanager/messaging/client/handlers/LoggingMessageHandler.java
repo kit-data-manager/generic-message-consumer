@@ -33,8 +33,10 @@ public class LoggingMessageHandler implements IMessageHandler{
   @Override
   public RESULT handle(BasicMessage message){
     LOGGER.debug("Successfully received message {}.", message);
-    //Reject message in order to preserve message if another, misconfigured handler is used
-    //If RESULT.SUCCEEDED is returned, the message is assumed to be processed properly.
+    //Typically, we should now return 'RESULT.SUCCEEDED' as we successfully processed the message.
+    //However, as we actually did not touch the message we pretend to reject the message. Thus, 
+    //the message receiver won't expect the message to be handled successfully if this sample
+    //handler is the only working handler installed, while all other handlers are failing.
     return RESULT.REJECTED;
   }
 
