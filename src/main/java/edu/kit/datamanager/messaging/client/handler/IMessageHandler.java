@@ -55,11 +55,12 @@ public interface IMessageHandler{
   boolean configure();
 
   /**
-   * Handle a single message received from the message queue. Which messages are
-   * received in configured by the receiver. As a receiver may accept more
-   * messages than a certain handler, a handler may return RESULT.REJECTED to
-   * decline processing the message. If a message was successfully processed,
-   * RESULT.SUCCEEDED should be returned, otherwise RESULT.FAILED is returned.
+   * Handle a single message received by a receiver from a message queue and
+   * forwarded to the handler. As a receiver may accept more messages than a
+   * certain handler, a handler may return RESULT.REJECTED early to decline
+   * processing the message, either because the message is not relevant or has a
+   * wrong format. If a message was successfully processed, RESULT.SUCCEEDED
+   * should be returned, otherwise RESULT.FAILED is returned.
    *
    * @param message The received message.
    *
