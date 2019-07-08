@@ -15,6 +15,7 @@
  */
 package edu.kit.datamanager.messaging.client.util;
 
+import edu.kit.datamanager.entities.messaging.BasicMessage;
 import edu.kit.datamanager.entities.repo.ContentInformation;
 import java.util.Arrays;
 import org.slf4j.Logger;
@@ -61,6 +62,10 @@ public class MessageHandlerUtils{
     LOGGER.trace("No content information or error state ({}) returned. Returning 'false'.", response.getStatusCodeValue());
     //no content found
     return false;
+  }
+
+  public static boolean isAddressed(String handlerIdentifier, BasicMessage message){
+    return message.getAddressees() == null || message.getAddressees().isEmpty() || message.getAddressees().contains(handlerIdentifier);
   }
 
 }

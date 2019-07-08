@@ -58,7 +58,6 @@ public class ScheduledMessageReceiver{
     } else{
       this.messageHandlers = null;
     }
-
   }
 
   @Autowired

@@ -17,6 +17,7 @@ package edu.kit.datamanager.messaging.client.handlers;
 
 import edu.kit.datamanager.entities.messaging.BasicMessage;
 import edu.kit.datamanager.messaging.client.handler.IMessageHandler;
+import edu.kit.datamanager.messaging.client.util.MessageHandlerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,11 @@ public class LoggingMessageHandler implements IMessageHandler{
   @Override
   public RESULT handle(BasicMessage message){
     LOGGER.debug("Successfully received message {}.", message);
+    if(MessageHandlerUtils.isAddressed(getHandlerIdentifier(), message)){
+      LOGGER.debug("This message is for me!");
+    } else{
+      LOGGER.debug("I'll ignore this message.");
+    }
     //Typically, we should now return 'RESULT.SUCCEEDED' as we successfully processed the message.
     //However, as we actually did not touch the message we pretend to reject the message. Thus, 
     //the message receiver won't expect the message to be handled successfully if this sample
