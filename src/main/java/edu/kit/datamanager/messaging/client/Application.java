@@ -93,7 +93,7 @@ public class Application implements ApplicationRunner{
     if(resourceIds.isEmpty()){
       //no resource ids provided, obtain all resource ids
       int page = 0;
-      MultiResourceAccessClient client = SimpleRepositoryClient.createClient(baseUrl).elementsPerPage(100).withPage(page);
+      MultiResourceAccessClient client = SimpleRepositoryClient.createClient(baseUrl).elementsPerPage(100).page(page);
 
       DataResource[] resources = client.getResources();
 
@@ -102,7 +102,7 @@ public class Application implements ApplicationRunner{
           resourceIds.add(resource.getId());
         }
         page++;
-        resources = client.withPage(page).getResources();
+        resources = client.page(page).getResources();
       }
     }
 
