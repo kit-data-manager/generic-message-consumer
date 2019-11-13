@@ -22,12 +22,16 @@ import edu.kit.datamanager.clients.SingleResourceAccessClient;
 import edu.kit.datamanager.entities.messaging.DataResourceMessage;
 import edu.kit.datamanager.entities.repo.ContentInformation;
 import edu.kit.datamanager.entities.repo.DataResource;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -57,100 +61,121 @@ public class Application implements ApplicationRunner{
 
   @Override
   public void run(ApplicationArguments args) throws Exception{
-    if(!args.getOptionNames().contains("action")){
-      System.err.print("Argument --action is missing. Must be one of 'create', 'update', 'fix', 'revoke' or 'delete'.");
+    //queue, routing key, message.json
+    if(!args.getOptionNames().contains("exchange")){
+      System.err.print("Argument --exchange is missing. You must provide an exchange the message is sent to.");
       System.exit(1);
     }
 
-    DataResourceMessage.ACTION action = null;
-    try{
-      action = DataResourceMessage.ACTION.valueOf(args.getOptionValues("action").get(0).toUpperCase());
-    } catch(IllegalArgumentException ex){
-      LOG.error("Invalid action provided. Value is " + args.getOptionValues("action") + ", allowed values are " + Arrays.asList(DataResourceMessage.ACTION.values()));
+    if(!args.getOptionNames().contains("routingKey")){
+      System.err.print("Argument --routingKey is missing. You must provide a routing key used to distribute the message.");
       System.exit(1);
     }
 
-    DataResourceMessage.SUB_CATEGORY subcategory = null;
-    if(args.getOptionNames().contains("subCategory")){
-      try{
-        subcategory = DataResourceMessage.SUB_CATEGORY.valueOf(args.getOptionValues("subCategory").get(0).toUpperCase());
-      } catch(IllegalArgumentException ex){
-        LOG.error("Invalid subCategory provided. Value is " + args.getOptionValues("subCategory") + ", allowed values are " + Arrays.asList(DataResourceMessage.SUB_CATEGORY.values()));
-        System.exit(1);
-      }
+    if(!args.getOptionNames().contains("message")){
+      System.err.print("Argument --message is missing. You must provide the path to a json file containing the message to send.");
+      System.exit(1);
     }
 
-    String baseUrl = "http://localhost:8090/api/v1/dataresources/";
-    if(args.getOptionNames().contains("baseUrl")){
-      baseUrl = args.getOptionValues("baseUrl").get(0);
+    Path filePath = Paths.get(args.getOptionValues("message").get(0));
+
+    if(!Files.exists(filePath) || !Files.isRegularFile(filePath)){
+      System.err.print("Path argument " + filePath + " does not point to a regular file.");
+      System.exit(1);
     }
 
-    List<String> resourceIds = new ArrayList<>();
-    if(args.getOptionNames().contains("resourceId")){
-      resourceIds.add(args.getOptionValues("resourceId").get(0));
-    }
+    byte[] message = FileUtils.readFileToByteArray(filePath.toFile());
 
-    if(resourceIds.isEmpty()){
-      //no resource ids provided, obtain all resource ids
-      int page = 0;
-      MultiResourceAccessClient client = SimpleRepositoryClient.createClient(baseUrl).elementsPerPage(100).page(page);
+    rabbitTemplate.convertAndSend(args.getOptionValues("exchange").get(0), args.getOptionValues("routingKey").get(0), message);
 
-      DataResource[] resources = client.getResources();
-
-      while(resources.length > 0){
-        for(DataResource resource : resources){
-          resourceIds.add(resource.getId());
-        }
-        page++;
-        resources = client.page(page).getResources();
-      }
-    }
-
-    List<String> addressees = (args.getOptionNames().contains("addressees")) ? args.getOptionValues("addressees") : new ArrayList();
-
-    for(String resourceId : resourceIds){
-      SingleResourceAccessClient client = SimpleRepositoryClient.createClient(baseUrl).withResourceId(resourceId);
-
-      if(subcategory != null && DataResourceMessage.SUB_CATEGORY.DATA.equals(subcategory)){
-        //data message...check contentPath
-        Map<String, Map<String, String>> contentPaths = new HashMap<>();
-        if(args.getOptionNames().contains("contentPath")){
-          for(String contentPath : args.getOptionValues("contentPath")){
-            ContentInformation[] info = client.getContentInformation(contentPath);
-            if(info == null || info.length == 0){
-              LOG.error("No content information found for content path {}.", contentPath);
-              System.exit(1);
-            } else{
-              Map<String, String> contentInfoMap = new HashMap<>();
-              contentInfoMap.put(DataResourceMessage.CONTENT_PATH_PROPERTY, contentPath);
-              contentInfoMap.put(DataResourceMessage.CONTENT_URI_PROPERTY, info[0].getContentUri());
-              contentInfoMap.put(DataResourceMessage.CONTENT_TYPE_PROPERTY, info[0].getMediaType());
-              contentPaths.put(contentPath, contentInfoMap);
-            }
-          }
-        } else{
-          //obtain all content information, content uri and type
-          ContentInformation[] infos = client.getContentInformation("/");
-          for(ContentInformation info : infos){
-            Map<String, String> contentInfoMap = new HashMap<>();
-            contentInfoMap.put(DataResourceMessage.CONTENT_PATH_PROPERTY, info.getRelativePath());
-            contentInfoMap.put(DataResourceMessage.CONTENT_URI_PROPERTY, info.getContentUri());
-            contentInfoMap.put(DataResourceMessage.CONTENT_TYPE_PROPERTY, info.getMediaType());
-            contentPaths.put(info.getRelativePath(), contentInfoMap);
-          }
-        }
-
-        Set<String> contentKeys = contentPaths.keySet();
-
-        for(String contentPath : contentKeys){
-          Map<String, String> map = contentPaths.get(contentPath);
-          sendDataMessage(resourceId, action, map, addressees);
-        }
-      } else{
-        sendMetadataMessage(resourceId, action, addressees);
-      }
-    }
-
+//    DataResourceMessage.ACTION action = null;
+//    try{
+//      action = DataResourceMessage.ACTION.valueOf(args.getOptionValues("action").get(0).toUpperCase());
+//    } catch(IllegalArgumentException ex){
+//      LOG.error("Invalid action provided. Value is " + args.getOptionValues("action") + ", allowed values are " + Arrays.asList(DataResourceMessage.ACTION.values()));
+//      System.exit(1);
+//    }
+//
+//    DataResourceMessage.SUB_CATEGORY subcategory = null;
+//    if(args.getOptionNames().contains("subCategory")){
+//      try{
+//        subcategory = DataResourceMessage.SUB_CATEGORY.valueOf(args.getOptionValues("subCategory").get(0).toUpperCase());
+//      } catch(IllegalArgumentException ex){
+//        LOG.error("Invalid subCategory provided. Value is " + args.getOptionValues("subCategory") + ", allowed values are " + Arrays.asList(DataResourceMessage.SUB_CATEGORY.values()));
+//        System.exit(1);
+//      }
+//    }
+//
+//    String baseUrl = "http://localhost:8090/api/v1/dataresources/";
+//    if(args.getOptionNames().contains("baseUrl")){
+//      baseUrl = args.getOptionValues("baseUrl").get(0);
+//    }
+//
+//    List<String> resourceIds = new ArrayList<>();
+//    if(args.getOptionNames().contains("resourceId")){
+//      resourceIds.add(args.getOptionValues("resourceId").get(0));
+//    }
+//
+//    if(resourceIds.isEmpty()){
+//      //no resource ids provided, obtain all resource ids
+//      int page = 0;
+//      MultiResourceAccessClient client = SimpleRepositoryClient.createClient(baseUrl).elementsPerPage(100).page(page);
+//
+//      DataResource[] resources = client.getResources();
+//
+//      while(resources.length > 0){
+//        for(DataResource resource : resources){
+//          resourceIds.add(resource.getId());
+//        }
+//        page++;
+//        resources = client.page(page).getResources();
+//      }
+//    }
+//
+//    List<String> addressees = (args.getOptionNames().contains("addressees")) ? args.getOptionValues("addressees") : new ArrayList();
+//
+//    for(String resourceId : resourceIds){
+//      SingleResourceAccessClient client = SimpleRepositoryClient.createClient(baseUrl).withResourceId(resourceId);
+//
+//      if(subcategory != null && DataResourceMessage.SUB_CATEGORY.DATA.equals(subcategory)){
+//        //data message...check contentPath
+//        Map<String, Map<String, String>> contentPaths = new HashMap<>();
+//        if(args.getOptionNames().contains("contentPath")){
+//          for(String contentPath : args.getOptionValues("contentPath")){
+//            ContentInformation[] info = client.getContentInformation(contentPath);
+//            if(info == null || info.length == 0){
+//              LOG.error("No content information found for content path {}.", contentPath);
+//              System.exit(1);
+//            } else{
+//              Map<String, String> contentInfoMap = new HashMap<>();
+//              contentInfoMap.put(DataResourceMessage.CONTENT_PATH_PROPERTY, contentPath);
+//              contentInfoMap.put(DataResourceMessage.CONTENT_URI_PROPERTY, info[0].getContentUri());
+//              contentInfoMap.put(DataResourceMessage.CONTENT_TYPE_PROPERTY, info[0].getMediaType());
+//              contentPaths.put(contentPath, contentInfoMap);
+//            }
+//          }
+//        } else{
+//          //obtain all content information, content uri and type
+//          ContentInformation[] infos = client.getContentInformation("/");
+//          for(ContentInformation info : infos){
+//            Map<String, String> contentInfoMap = new HashMap<>();
+//            contentInfoMap.put(DataResourceMessage.CONTENT_PATH_PROPERTY, info.getRelativePath());
+//            contentInfoMap.put(DataResourceMessage.CONTENT_URI_PROPERTY, info.getContentUri());
+//            contentInfoMap.put(DataResourceMessage.CONTENT_TYPE_PROPERTY, info.getMediaType());
+//            contentPaths.put(info.getRelativePath(), contentInfoMap);
+//          }
+//        }
+//
+//        Set<String> contentKeys = contentPaths.keySet();
+//
+//        for(String contentPath : contentKeys){
+//          Map<String, String> map = contentPaths.get(contentPath);
+//          sendDataMessage(resourceId, action, map, addressees);
+//        }
+//      } else{
+//        sendMetadataMessage(resourceId, action, addressees);
+//      }
+//    }
     System.exit(0);
   }
 

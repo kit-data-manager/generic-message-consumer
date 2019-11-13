@@ -88,7 +88,7 @@ public class ScheduledMessageReceiver{
       }
       INITIALIZED = true;
     }
-    LOGGER.trace("Performing receiveNextMessage().");
+    LOGGER.trace("Performing receiveNextMessage() from queue {}.", config.queue().getName());
     Message msg = rabbitTemplate.receive(config.queue().getName(), 1000);
 
     if(msg != null){
