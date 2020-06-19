@@ -19,6 +19,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+
 /**
  * Consumer binding used to configure queue and routing keys used to receive
  * messages from a topic exchange. All configuration keys are assumed to be
