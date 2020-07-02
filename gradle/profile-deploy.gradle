@@ -1,0 +1,77 @@
+apply plugin: 'signing'
+apply plugin: 'net.researchgate.release'
+
+//Sonatype settings
+group = "edu.kit.datamanager"
+archivesBaseName = "generic-message-consumer"
+version = "0.1"
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+release {
+    versionPropertyFile = 'gradle.properties'
+    versionProperties = ['version', 'mainversion']
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+//            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+//                authentication(userName: ossrhUsername, password: ossrhPassword)
+//            }
+
+            pom.project {
+                name 'generic-message-consumer'
+                packaging 'jar'
+                // optionally artifactId can be defined here 
+                description 'Generic message consumer for event handling in KIT Data Manager 2.0 services'
+                url 'http://datamanager.kit.edu'
+
+                scm {
+                    connection 'scm:git:github.com/kit-data-manager/generic-message-consumer'
+                    developerConnection 'scm:git:github.com/kit-data-manager/generic-message-consumer'
+                    url 'https://github.com/kit-data-manager/generic-message-consumer'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'Jejkal'
+                        name 'Thomas Jejkal'
+                        email 'webmaster@datamanager.kit.edu'
+                    }
+                }
+            }
+        }
+    }
+}
