@@ -1,16 +1,17 @@
 buildscript {
-   repositories { 
-      mavenLocal() 
-      jcenter()
-      mavenCentral()
-   }
-   dependencies {
-      classpath("org.springframework.boot:spring-boot-gradle-plugin:2.2.2.RELEASE")
-   }
+    repositories { 
+        mavenLocal() 
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.2.2.RELEASE")
+        classpath("net.researchgate:gradle-release:2.6.0")
+    }
 }
 
 plugins { 
-   id 'io.franzbecker.gradle-lombok' version '1.14'
+    id 'io.franzbecker.gradle-lombok' version '1.14'
 }
 
 apply plugin: 'java'
@@ -24,38 +25,38 @@ group = 'edu.kit.datamanager'
 version = '0.1-SNAPSHOT'
 
 bootJar {
-   baseName = 'generic-message-consumer'
+    baseName = 'generic-message-consumer'
 }
 
 jar {
-   enabled = true
+    enabled = true
 }
 
 bootJar {
-   classifier = 'boot'
+    classifier = 'boot'
 }
 
 repositories {
-   mavenLocal() 
-   jcenter()
-   mavenCentral()
-   maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
+    mavenLocal() 
+    jcenter()
+    mavenCentral()
+    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-   implementation("org.springframework.boot:spring-boot-starter-amqp")
-   implementation("edu.kit.datamanager:service-base:0.1")
-   implementation group: 'com.h2database', name: 'h2', version: '1.3.148'
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation("edu.kit.datamanager:service-base:0.1")
+    implementation group: 'com.h2database', name: 'h2', version: '1.3.148'
 
-   testImplementation("junit:junit")
+    testImplementation("junit:junit")
 }
 
 lombok {
-   version = '1.18.10'
-   sha256 = ""
+    version = '1.18.10'
+    sha256 = ""
 }
 
 if (project.hasProperty('deploy')) {
