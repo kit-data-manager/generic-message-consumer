@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.2.2.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.3.3.RELEASE")
         classpath("net.researchgate:gradle-release:2.6.0")
     }
 }
