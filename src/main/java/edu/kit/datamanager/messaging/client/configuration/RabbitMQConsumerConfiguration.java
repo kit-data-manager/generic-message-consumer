@@ -27,6 +27,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -51,6 +52,9 @@ public class RabbitMQConsumerConfiguration{
    */
   @Value("${repo.messaging.hostname:localhost}")
   private String hostname;
+
+  @Autowired
+  private AmqpAdmin amqpAdmin;
 
   /**
    * The consumer binding used to connect to a certain exchange, establishing a
@@ -87,8 +91,17 @@ public class RabbitMQConsumerConfiguration{
   List<Binding> bindings(Queue queue, TopicExchange exchange){
     List<Binding> amqpBindings = new ArrayList<>();
 
-    for(String routingKey : binding.getRoutingKeys()){
-      amqpBindings.add(BindingBuilder.bind(queue()).to(exchange()).with(routingKey));
+    for (String routingKey : binding.getRoutingKeys()) {
+      amqpBindings.add(
+        BindingBuilder
+          .bind(queue())
+          .to(exchange())
+          .with(routingKey)
+      );
+    }
+
+    for (Binding b : amqpBindings) {
+      amqpAdmin.declareBinding(b);
     }
 
     return amqpBindings;
