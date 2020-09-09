@@ -28,6 +28,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,12 +84,18 @@ public class RabbitMQConsumerConfiguration{
     return new TopicExchange(binding.getExchange());
   }
 
+  @ConditionalOnBean(name="amqpAdmin")
   @Bean
   List<Binding> bindings(Queue queue, TopicExchange exchange){
     List<Binding> amqpBindings = new ArrayList<>();
 
     for(String routingKey : binding.getRoutingKeys()){
-      amqpBindings.add(BindingBuilder.bind(queue()).to(exchange()).with(routingKey));
+      amqpBindings.add(
+        BindingBuilder
+          .bind(queue())
+          .to(exchange())
+          .with(routingKey)
+      );
     }
 
     return amqpBindings;
