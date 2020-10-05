@@ -51,9 +51,6 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConsumerConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConsumerConfiguration.class);
-
-    @Value("${repo.messaging.enabled:false}")
-    private boolean enabled;
     
     /**
      * The hostname of the RabbitMQ server. (default: localhost)
