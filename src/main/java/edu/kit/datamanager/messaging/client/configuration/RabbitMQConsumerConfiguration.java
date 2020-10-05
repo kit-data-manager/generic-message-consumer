@@ -18,9 +18,12 @@ package edu.kit.datamanager.messaging.client.configuration;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -45,59 +48,70 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "repo.messaging")
 @Data
-public class RabbitMQConsumerConfiguration{
+public class RabbitMQConsumerConfiguration {
 
-  /**
-   * The hostname of the RabbitMQ server. (default: localhost)
-   */
-  @Value("${repo.messaging.hostname:localhost}")
-  private String hostname;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConsumerConfiguration.class);
 
-  /**
-   * The consumer binding used to connect to a certain exchange, establishing a
-   * queue and linking both by one or more routing keys.
-   */
-  private ConsumerBinding binding;
+    @Value("${repo.messaging.enabled:false}")
+    private boolean enabled;
+    
+    /**
+     * The hostname of the RabbitMQ server. (default: localhost)
+     */
+    @Value("${repo.messaging.hostname:localhost}")
+    private String hostname;
 
-  @Bean
-  public ConnectionFactory connectionFactory(){
-    return new CachingConnectionFactory(hostname);
-  }
+    /**
+     * The consumer binding used to connect to a certain exchange, establishing
+     * a queue and linking both by one or more routing keys.
+     */
+    private ConsumerBinding binding;
 
-  @Bean
-  public AmqpAdmin amqpAdmin(){
-    return new RabbitAdmin(connectionFactory());
-  }
-
-  @Bean
-  public RabbitTemplate rabbitTemplate(){
-    return new RabbitTemplate(connectionFactory());
-  }
-
-  @Bean
-  public Queue queue(){
-    return new Queue(binding.getQueue());
-  }
-
-  @Bean
-  public TopicExchange exchange(){
-    return new TopicExchange(binding.getExchange());
-  }
-
-  @ConditionalOnBean(name="amqpAdmin")
-  @Bean
-  List<Binding> bindings(Queue queue, TopicExchange exchange){
-    List<Binding> amqpBindings = new ArrayList<>();
-
-    for(String routingKey : binding.getRoutingKeys()){
-      amqpBindings.add(
-        BindingBuilder
-          .bind(queue())
-          .to(exchange())
-          .with(routingKey)
-      );
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        return new CachingConnectionFactory(hostname);
     }
 
-    return amqpBindings;
-  }
+    @Bean
+    public AmqpAdmin amqpAdmin() {
+        return new RabbitAdmin(connectionFactory());
+    }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate() {
+        return new RabbitTemplate(connectionFactory());
+    }
+
+    @Bean
+    public Queue queue() {
+        return new Queue(binding.getQueue());
+    }
+
+    @Bean
+    public TopicExchange exchange() {
+        return new TopicExchange(binding.getExchange());
+    }
+
+    @Bean
+    public Declarables topicBindings() {
+        LOGGER.trace("Configuring exchange {} with queue {}.", exchange(), queue());
+        List<Binding> amqpBindings = new ArrayList<>();
+
+        Declarables declarables = new Declarables();
+        LOGGER.trace("Adding queue {} to list of declarables.", queue());
+        declarables.getDeclarables().add(queue());
+        LOGGER.trace("Adding exchange {} to list of declarables.", exchange());
+        declarables.getDeclarables().add(exchange());
+        for (String routingKey : binding.getRoutingKeys()) {
+            LOGGER.trace("Adding binding via routing key {} to declarables.", routingKey);
+            amqpBindings.add(
+                    BindingBuilder
+                            .bind(queue())
+                            .to(exchange())
+                            .with(routingKey)
+            );
+        }
+        declarables.getDeclarables().addAll(amqpBindings);
+        return declarables;
+    }
 }

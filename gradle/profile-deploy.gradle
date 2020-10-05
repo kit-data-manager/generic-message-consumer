@@ -4,7 +4,6 @@ apply plugin: 'net.researchgate.release'
 //Sonatype settings
 group = "edu.kit.datamanager"
 archivesBaseName = "generic-message-consumer"
-version = "0.1"
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
