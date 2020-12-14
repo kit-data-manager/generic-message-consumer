@@ -16,6 +16,8 @@ task sourcesJar(type: Jar) {
 }
 
 release {
+    // template for tagging version.
+    tagTemplate = 'v${version}'
     versionPropertyFile = 'gradle.properties'
     versionProperties = ['version', 'mainversion']
 }
