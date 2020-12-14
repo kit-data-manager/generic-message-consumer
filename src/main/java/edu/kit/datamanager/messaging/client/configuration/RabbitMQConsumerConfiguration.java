@@ -62,7 +62,7 @@ public class RabbitMQConsumerConfiguration {
      * The consumer binding used to connect to a certain exchange, establishing
      * a queue and linking both by one or more routing keys.
      */
-    private ConsumerBinding binding;
+    private ConsumerBinding receiver;
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -81,12 +81,12 @@ public class RabbitMQConsumerConfiguration {
 
     @Bean
     public Queue queue() {
-        return new Queue(binding.getQueue());
+        return new Queue(receiver.getQueue());
     }
 
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange(binding.getExchange());
+        return new TopicExchange(receiver.getExchange());
     }
 
     @Bean
@@ -99,7 +99,7 @@ public class RabbitMQConsumerConfiguration {
         declarables.getDeclarables().add(queue());
         LOGGER.trace("Adding exchange {} to list of declarables.", exchange());
         declarables.getDeclarables().add(exchange());
-        for (String routingKey : binding.getRoutingKeys()) {
+        for (String routingKey : receiver.getRoutingKeys()) {
             LOGGER.trace("Adding binding via routing key {} to declarables.", routingKey);
             amqpBindings.add(
                     BindingBuilder
