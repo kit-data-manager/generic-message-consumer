@@ -34,7 +34,7 @@ public class ConsumerBinding{
   /**
    * The topic exchange to connect to.
    */
-  @Value("${repo.messaging.binding.exchange:repository_events}")
+  @Value("${repo.messaging.topic:repository_events}")
   private String exchange;
   /**
    * The queue name used to receive messages from the configured exchange.
