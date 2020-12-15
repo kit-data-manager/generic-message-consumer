@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.kit.datamanager.messaging.client;
+package edu.kit.datamanager.messaging.client.receiver;
 
 import edu.kit.datamanager.configuration.RabbitMQConfiguration;
 import edu.kit.datamanager.entities.messaging.BasicMessage;
