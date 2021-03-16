@@ -15,4 +15,4 @@ jobs:
         run: gradle -Pdeploy publish
         env:
           MAVEN_USERNAME: Jejkal
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
