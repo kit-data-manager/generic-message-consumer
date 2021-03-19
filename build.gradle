@@ -13,6 +13,7 @@ buildscript {
 
 plugins { 
     id 'io.franzbecker.gradle-lombok' version '1.14'
+  	id 'maven-publish'
 }
 
 apply plugin: 'java'
@@ -63,6 +64,18 @@ lombok {
 if (project.hasProperty('deploy')) {
     println 'Using deploy profile for building ' + project.getName()
     apply from: 'gradle/profile-deploy.gradle'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'edu.kit.datamanager'
+            artifactId = 'generic-message-consumer'
+            version = ${version}
+
+            from components.java
+        }
+    }
 }
 
 nexusPublishing {
