@@ -80,6 +80,9 @@ publishing {
 
 nexusPublishing {
     repositories {
-        sonatype()
+        sonatype{
+            username = '${ossrhUsername}'
+            password = '${ossrhPassword}'
+        }
     }
 }
