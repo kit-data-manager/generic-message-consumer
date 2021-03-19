@@ -12,7 +12,4 @@ jobs:
         with:
           java-version: 15
       - name: Publish package
-        run: gradle -Pdeploy publish
-        env:
-          MAVEN_USERNAME: Jejkal
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+        run: gradle -Pdeploy publishToSonatype closeAndReleaseSonatypeStagingRepository
