@@ -12,4 +12,4 @@ jobs:
         with:
           java-version: 15
       - name: Publish package
-        run: gradle -Pdeploy publishToSonatype closeAndReleaseSonatypeStagingRepository
+        run: gradle publishToSonatype closeAndReleaseSonatypeStagingRepository
