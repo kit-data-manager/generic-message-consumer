@@ -71,7 +71,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'edu.kit.datamanager'
             artifactId = 'generic-message-consumer'
-            version = ${version}
+            version = '${version}'
 
             from components.java
         }
