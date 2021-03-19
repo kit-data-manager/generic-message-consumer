@@ -63,3 +63,9 @@ if (project.hasProperty('deploy')) {
     println 'Using deploy profile for building ' + project.getName()
     apply from: 'gradle/profile-deploy.gradle'
 }
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
