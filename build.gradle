@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.2.2.RELEASE")
         classpath("net.researchgate:gradle-release:2.6.0")
-        classpath("io.github.gradle-nexus.publish-plugin:1.0.0")
+        classpath("io.github.gradle-nexus:publish-plugin:1.0.0")
     }
 }
 
