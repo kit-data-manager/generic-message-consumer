@@ -32,50 +32,69 @@ signing {
     sign configurations.archives
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            ossrhUsername = "$System.env.OSSRH_USERNAME"
-            ossrhPassword = "$System.env.OSSRH_PASSWORD"
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'edu.kit.datamanager'
+            artifactId = 'generic-message-consumer'
+            version = 'v${version}'
+
+            from components.java
+        }
+    }
+}
+        
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
+
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+//            ossrhUsername = "$System.env.OSSRH_USERNAME"
+//            ossrhPassword = "$System.env.OSSRH_PASSWORD"
                    
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+//            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//               authentication(userName: ossrhUsername, password: ossrhPassword)
+//            }
 
 //            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
 //                authentication(userName: ossrhUsername, password: ossrhPassword)
 //            }
 
-            pom.project {
-                name 'generic-message-consumer'
-                packaging 'jar'
+//            pom.project {
+//                name 'generic-message-consumer'
+//                packaging 'jar'
                 // optionally artifactId can be defined here 
-                description 'Generic message consumer for event handling in KIT Data Manager 2.0 services'
-                url 'http://datamanager.kit.edu'
+ //               description 'Generic message consumer for event handling in KIT Data Manager 2.0 services'
+ //               url 'http://datamanager.kit.edu'
 
-                scm {
-                    connection 'scm:git:github.com/kit-data-manager/generic-message-consumer'
-                    developerConnection 'scm:git:github.com/kit-data-manager/generic-message-consumer'
-                    url 'https://github.com/kit-data-manager/generic-message-consumer'
-                }
+ //               scm {
+//                    connection 'scm:git:github.com/kit-data-manager/generic-message-consumer'
+ //                   developerConnection 'scm:git:github.com/kit-data-manager/generic-message-consumer'
+ //                   url 'https://github.com/kit-data-manager/generic-message-consumer'
+//                }
 
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
+ //               licenses {
+ //                   license {
+ //                       name 'The Apache License, Version 2.0'
+ //                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+  //                  }
+ //               }
 
-                developers {
-                    developer {
-                        id 'Jejkal'
-                        name 'Thomas Jejkal'
-                        email 'webmaster@datamanager.kit.edu'
-                    }
-                }
-            }
-        }
-    }
-}
+ //               developers {
+ //                   developer {
+  //                      id 'Jejkal'
+ //                       name 'Thomas Jejkal'
+ //                       email 'webmaster@datamanager.kit.edu'
+ //                   }
+ //               }
+ //           }
+ //       }
+  //  }
+//}
