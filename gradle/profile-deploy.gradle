@@ -16,7 +16,6 @@ task sourcesJar(type: Jar) {
 }
 
 release {
-    // template for tagging version.
     tagTemplate = 'v${version}'
     versionPropertyFile = 'gradle.properties'
     versionProperties = ['version', 'mainversion']
@@ -28,10 +27,24 @@ artifacts {
     archives sourcesJar
 }
 
+//signing {
+ //   sign configurations.archives
+//}
+
 signing {
-    sign configurations.archives
+    required { !project.version.endsWith("-SNAPSHOT") && !project.hasProperty("skipSigning") }
+    if (project.findProperty("signingKey")) {
+        useInMemoryPgpKeys(findProperty("signingKey"), findProperty("signingPassword"))
+    } else {
+        useGpgCmd()
+    }
+    sign publishing.publications.mavenJava
 }
 
+//do not generate extra load on Nexus with new staging repository if signing fails
+tasks.withType(io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository).configureEach {
+  shouldRunAfter(tasks.withType(Sign))
+}
 
 publishing {
     publications {
