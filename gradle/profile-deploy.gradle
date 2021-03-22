@@ -1,5 +1,6 @@
 apply plugin: 'signing'
 apply plugin: 'net.researchgate.release'
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
 //Sonatype settings
 group = "edu.kit.datamanager"
@@ -31,21 +32,6 @@ artifacts {
  //   sign configurations.archives
 //}
 
-signing {
-    required { !project.version.endsWith("-SNAPSHOT") && !project.hasProperty("skipSigning") }
-    if (project.findProperty("signingKey")) {
-        useInMemoryPgpKeys(findProperty("signingKey"), findProperty("signingPassword"))
-    } else {
-        useGpgCmd()
-    }
-    sign publishing.publications.maven
-}
-
-//do not generate extra load on Nexus with new staging repository if signing fails
-tasks.withType(io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository).configureEach {
-  shouldRunAfter(tasks.withType(Sign))
-}
-
 publishing {
     publications {
         maven(MavenPublication) {
@@ -63,6 +49,18 @@ nexusPublishing {
         sonatype()
     }
 }
+
+signing {
+    required { !project.version.endsWith("-SNAPSHOT") && !project.hasProperty("skipSigning") }
+    if (project.findProperty("signingKey")) {
+        useInMemoryPgpKeys(findProperty("signingKey"), findProperty("signingPassword"))
+    } else {
+        useGpgCmd()
+    }
+    sign publishing.publications.maven
+}
+
+
 
 //uploadArchives {
 //    repositories {
