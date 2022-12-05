@@ -20,6 +20,7 @@ import edu.kit.datamanager.entities.messaging.BasicMessage;
 import edu.kit.datamanager.messaging.client.configuration.RabbitMQConsumerConfiguration;
 import edu.kit.datamanager.messaging.client.handler.IMessageHandler;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -109,7 +110,7 @@ public class ScheduledMessageReceiver {
 
       if (msg != null) {
         try {
-          BasicMessage message = BasicMessage.fromJson(new String(msg.getBody()));
+          BasicMessage message = BasicMessage.fromJson(new String(msg.getBody(), StandardCharsets.UTF_8));
           LOGGER.trace("Processing received message using {} registered handler(s).", messageHandlers.length);
           boolean messageHandledByOne = false;
           for (IMessageHandler handler : endorsedHandlers) {
@@ -161,10 +162,10 @@ public class ScheduledMessageReceiver {
     try {
       Path logfile = Paths.get("failed_message_handles.csv");
       if (!Files.exists(logfile)) {
-        Files.write(logfile, "message handler, message\n".getBytes(), StandardOpenOption.CREATE);
+        Files.write(logfile, "message handler, message\n".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
       }
 
-      Files.write(logfile, entry.getBytes(), StandardOpenOption.APPEND);
+      Files.write(logfile, entry.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
       result = true;
     } catch (IOException ex) {
       LOGGER.error("Failed to write entry " + entry + " to message error log 'failed_message_handles.csv'.", ex);
