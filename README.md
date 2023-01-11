@@ -38,14 +38,14 @@ Instead of using a local build you may also use the most recent version from the
 <dependency>
     <groupId>edu.kit.datamanager</groupId>
     <artifactId>generic-message-consumer</artifactId>
-    <version>0.2.1</version>
+    <version>1.0.0</version>
 </dependency>
 ~~~~
 
 ### Gradle
 
 ~~~~
-compile group: 'edu.kit.datamanager', name: 'generic-message-consumer', version: '0.2.1'
+compile group: 'edu.kit.datamanager', name: 'generic-message-consumer', version: '1.0.0'
 ~~~~
 
 
