@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2023-01-11
 ### Added
-- Switch to gitHub Actions for CI
+- Switch to GitHub Actions for CI
 
 ### Changed
 - Handling of schedule changed (checking for pending messages)
@@ -32,11 +32,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update to postgresql 42.5.1
 - Update to h2 2.1.214
 - Update to io.freefair.lombok 6.5.1
-- Remove dependencies of powermock for tests
 - Update to org.owasp.dependencycheck 7.3.0
 - Update to spring-messaging 5.3.24
 - Update to spring-cloud 3.1.4
-- Update to service-base 1.0.7
+- Update to service-base 1.1.0
+
+### Removes
+- Remove dependencies of powermock for tests
 
 ## [0.2.0] - date 2020-12-15
 ### Changed
