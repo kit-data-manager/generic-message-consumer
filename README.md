@@ -1,7 +1,10 @@
 # KIT Data Manager - Generic Message Consumer
 
 ![Build Status](https://img.shields.io/travis/kit-data-manager/generic-message-consumer.svg)
+[![codecov](https://codecov.io/gh/kit-data-manager/generic-message-consumer/branch/master/graph/badge.svg)](https://codecov.io/gh/kit-data-manager/generic-message-consumer)
+[![CodeQL](https://github.com/kit-data-manager/generic-message-consumer/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/kit-data-manager/generic-message-consumer/actions/workflows/codeql-analysis.yml)
 ![License](https://img.shields.io/github/license/kit-data-manager/generic-message-consumer.svg)
+
 
 Helper module for KIT DM 2.0 services providing capabilities to receive AMQP messages, e.g. sent by the repository or the authentication service. 
 It allows to trigger actions in case of a specific event like the creation of a user or the modification of a resource. For details on which events
