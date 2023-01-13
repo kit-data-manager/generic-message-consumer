@@ -1,6 +1,37 @@
-/build/
-/.gradle/
-/config/
+##############################################################
+# Gradle
+##############################################################
+# Ignore Gradle project-specific cache directory
+.gradle
+# Ignore Gradle build output directory
+build
+
+##############################################################
+# IDE settings
+##############################################################
+# NetBeans
+nbproject
+# Eclipse et.al
+*.eclipse*
+.project
+.classpath
+.vscode
+
+##############################################################
+# Backup files
+##############################################################
+**/*~
+**/*.bak
+
+##############################################################
+# Spring Boot private settings
+##############################################################
+config
+**/application.properties
+
+##############################################################
+# Sample Handler
+##############################################################
 /sample-handler/.gradle/
 /sample-handler/.nb-gradle/
 /sample-handler/build/
