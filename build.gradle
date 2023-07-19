@@ -67,6 +67,7 @@ if (project.hasProperty('deploy')) {
 bootJar {
     baseName = 'generic-message-consumer'
     classifier = 'boot'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jar {
