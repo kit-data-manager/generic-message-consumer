@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Security
+* Bump org.springframework.boot to 3.1.1
+* Bump io.freefair.lombok to 8.1.0
+* Bump io.freefair.maven-publish-java to 8.1.0
+* Bump org.owasp.dependencycheck to 8.3.1
+* Bump edu.kit.datamanager:service-base to 1.2.0
+* Bump jacoco to 0.8.10
 
 ### Changed
 
