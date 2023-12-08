@@ -50,7 +50,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-amqp"
 
     implementation "commons-io:commons-io:2.15.1"
-    implementation "org.apache.httpcomponents:httpclient:4.5.13"
+    implementation "org.apache.httpcomponents:httpclient:4.5.14"
 
     implementation "edu.kit.datamanager:service-base:1.2.0"
     //driver for h2
