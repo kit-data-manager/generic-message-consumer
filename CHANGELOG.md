@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added port, username, and password properties by @ThomasJejkal in https://github.com/kit-data-manager/generic-message-consumer/pull/16
 
 ### Fixed
+* Added NPE check for receiver properties if not configured
 
 ### Deprecated
 
