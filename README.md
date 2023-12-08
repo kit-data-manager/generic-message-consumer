@@ -14,7 +14,7 @@ are emitted, please refer to the documentation of the emitting service.
 
 In order to build this module you'll need:
 
-* Java SE Development Kit 8 or higher
+* Java SE Development Kit 17 or higher
 
 After obtaining the sources change to the folder where the sources are located and call:
 
@@ -38,14 +38,14 @@ Instead of using a local build you may also use the most recent version from the
 <dependency>
     <groupId>edu.kit.datamanager</groupId>
     <artifactId>generic-message-consumer</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ~~~~
 
 ### Gradle
 
 ~~~~
-compile group: 'edu.kit.datamanager', name: 'generic-message-consumer', version: '1.0.0'
+compile group: 'edu.kit.datamanager', name: 'generic-message-consumer', version: '1.1.0'
 ~~~~
 
 
