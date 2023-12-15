@@ -3,12 +3,12 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
    
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
@@ -77,7 +77,8 @@ signing {
 
        sign publishing.publications.maven
     }else {
-       println 'WARNING: No property \'signingKey\' found. Artifact signing will be skipped.'
+       println 'WARNING: No property \'signingKey\' found. Try to sign with local settings.'
+       sign publishing.publications.maven
     }
 }
 javadoc {

@@ -30,6 +30,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConfigurationProperties(prefix = "repo.messaging")
+@ConditionalOnExpression("${repo.messaging.enabled:false}")
 @Data
 public class RabbitMQConsumerConfiguration {
 
@@ -75,7 +77,7 @@ public class RabbitMQConsumerConfiguration {
      * The consumer binding used to connect to a certain exchange, establishing
      * a queue and linking both by one or more routing keys.
      */
-    private Optional<ConsumerBinding> receiver;
+    private ConsumerBinding receiver;
 
     @Bean
     public ConnectionFactory rabbitMQConnectionFactory() {
@@ -94,43 +96,34 @@ public class RabbitMQConsumerConfiguration {
 
     @Bean
     public Queue queue() {
-        if (receiver != null && receiver.isPresent()) {
-            return new Queue(receiver.get().getQueue());
-        }
-        return null;
+        return new Queue(receiver.getQueue());
     }
 
     @Bean
     public TopicExchange exchange() {
-        if (receiver != null && receiver.isPresent()) {
-            return new TopicExchange(receiver.get().getExchange());
-        }
-        return null;
+        return new TopicExchange(receiver.getExchange());
     }
 
     @Bean
     public Declarables topicBindings() {
-        if (receiver != null && receiver.isPresent()) {
-            LOGGER.trace("Configuring exchange {} with queue {}.", exchange(), queue());
-            List<Binding> amqpBindings = new ArrayList<>();
+        LOGGER.trace("Configuring exchange {} with queue {}.", exchange(), queue());
+        List<Binding> amqpBindings = new ArrayList<>();
 
-            Declarables declarables = new Declarables();
-            LOGGER.trace("Adding queue {} to list of declarables.", queue());
-            declarables.getDeclarables().add(queue());
-            LOGGER.trace("Adding exchange {} to list of declarables.", exchange());
-            declarables.getDeclarables().add(exchange());
-            for (String routingKey : receiver.get().getRoutingKeys()) {
-                LOGGER.trace("Adding binding via routing key {} to declarables.", routingKey);
-                amqpBindings.add(
-                        BindingBuilder
-                                .bind(queue())
-                                .to(exchange())
-                                .with(routingKey)
-                );
-            }
-            declarables.getDeclarables().addAll(amqpBindings);
-            return declarables;
+        Declarables declarables = new Declarables();
+        LOGGER.trace("Adding queue {} to list of declarables.", queue());
+        declarables.getDeclarables().add(queue());
+        LOGGER.trace("Adding exchange {} to list of declarables.", exchange());
+        declarables.getDeclarables().add(exchange());
+        for (String routingKey : receiver.getRoutingKeys()) {
+            LOGGER.trace("Adding binding via routing key {} to declarables.", routingKey);
+            amqpBindings.add(
+                    BindingBuilder
+                            .bind(queue())
+                            .to(exchange())
+                            .with(routingKey)
+            );
         }
-        return null;
+        declarables.getDeclarables().addAll(amqpBindings);
+        return declarables;
     }
 }
