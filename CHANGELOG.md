@@ -5,6 +5,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+
+### Fixed
+
+### Security
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+## [1.1.0] - 2023-12-08
+### Added
+* Added port, username, and password properties by @ThomasJejkal in https://github.com/kit-data-manager/generic-message-consumer/pull/16
+
+### Fixed
+* Added NPE check for receiver properties if not configured
 
 ### Security
 * Bump org.springframework.boot to 3.1.1
@@ -13,18 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Bump org.owasp.dependencycheck to 8.3.1
 * Bump edu.kit.datamanager:service-base to 1.2.0
 * Bump jacoco to 0.8.10
-
-### Changed
-
-### Added
-* Added port, username, and password properties by @ThomasJejkal in https://github.com/kit-data-manager/generic-message-consumer/pull/16
-
-### Fixed
-* Added NPE check for receiver properties if not configured
-
-### Deprecated
-
-### Removed
 
 ## [1.0.0] - 2023-01-11
 ### Added
