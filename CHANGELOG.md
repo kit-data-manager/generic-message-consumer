@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 * Bump org.springframework.boot to 3.2.0
 * Bump io.freefair.lombok to 8.4
+* Bump h2 to 2.2.224
+* Bump io.github.gradle-nexus.publish-plugin to 1.3.0
+* Bump org.owasp.dependencycheck to 9.0.5
+* Bump io.spring.dependency-management to 1.1.4
+* Bump commons-io to 2.15.1
+* Bump httpclient to 4.5.14
 
 ## [1.1.0] - 2023-12-08
 ### Added
@@ -36,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Bump org.springframework.boot to 3.1.1
 * Bump io.freefair.lombok to 8.1.0
 * Bump io.freefair.maven-publish-java to 8.1.0
-* Bump org.owasp.dependencycheck to 8.3.1
+* Bump org.owasp.dependencycheck to 9.0.5
 * Bump edu.kit.datamanager:service-base to 1.2.0
 * Bump jacoco to 0.8.10
 
