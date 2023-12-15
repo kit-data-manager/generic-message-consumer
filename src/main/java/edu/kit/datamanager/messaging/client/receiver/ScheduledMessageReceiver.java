@@ -46,53 +46,52 @@ public class ScheduledMessageReceiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledMessageReceiver.class);
 
-    private RabbitTemplate rabbitTemplate;
+    private final Optional<RabbitTemplate> rabbitTemplate;
 
-    private RabbitMQConfiguration configuration;
+    private final Optional<RabbitMQConfiguration> configuration;
 
-    private IMessageHandler[] messageHandlers;
+    private final Optional<IMessageHandler[]> messageHandlers;
+
     private final List<IMessageHandler> endorsedHandlers = new ArrayList<>();
+
+    private Optional<RabbitMQConsumerConfiguration> consumerConfig;
+
     private boolean INITIALIZED = false;
     private boolean MESSAGING_DISABLED_WARNING_EMITTED = false;
+    private boolean MESSAGING_CONSUMER_NOT_CONFIGURED_WARNING_EMITTED = false;
     private boolean NO_HANDLER_WARNING_EMITTED = false;
 
     @Autowired
     public ScheduledMessageReceiver(Optional<IMessageHandler[]> messageHandlers,
             Optional<RabbitTemplate> rabbitTemplate,
-            Optional<RabbitMQConfiguration> configuration) {
-        if (rabbitTemplate.isPresent()) {
-            this.rabbitTemplate = rabbitTemplate.get();
-        } else {
-            this.rabbitTemplate = null;
-        }
+            Optional<RabbitMQConfiguration> configuration,
+            Optional<RabbitMQConsumerConfiguration> consumerConfig) {
 
-        if (configuration.isPresent()) {
-            this.configuration = configuration.get();
-
-        } else {
-            this.configuration = null;
-        }
-
-        if (messageHandlers.isPresent()) {
-            this.messageHandlers = messageHandlers.get();
-        } else {
-            this.messageHandlers = null;
-        }
+        this.rabbitTemplate = rabbitTemplate;
+        this.configuration = configuration;
+        this.messageHandlers = messageHandlers;
+        this.consumerConfig = consumerConfig;
     }
-
-    @Autowired
-    private RabbitMQConsumerConfiguration config;
 
     @Scheduled(fixedRateString = "${repo.schedule.rate}")
     public void receiveNextMessage() {
-        if (!configuration.isMessagingEnabled()) {
+        if (!configuration.isPresent() || !configuration.get().isMessagingEnabled()) {
             if (!MESSAGING_DISABLED_WARNING_EMITTED) {
-                LOGGER.warn("No messaging  handlers registered. Skip receiving all messages.");
+                LOGGER.warn("Messaging is disabled. Skip receiving all messages.");
                 MESSAGING_DISABLED_WARNING_EMITTED = true;
             }
             return;
         }
-        if (messageHandlers == null) {
+
+        if (!consumerConfig.isPresent()) {
+            if (!MESSAGING_CONSUMER_NOT_CONFIGURED_WARNING_EMITTED) {
+                LOGGER.warn("Messaging consumer not configured. Skip receiving all messages.");
+                MESSAGING_CONSUMER_NOT_CONFIGURED_WARNING_EMITTED = true;
+            }
+            return;
+        }
+
+        if (!messageHandlers.isPresent() || messageHandlers.isEmpty()) {
             if (!NO_HANDLER_WARNING_EMITTED) {
                 LOGGER.warn("No message handlers registered. Skip receiving all messages.");
                 NO_HANDLER_WARNING_EMITTED = true;
@@ -104,7 +103,7 @@ public class ScheduledMessageReceiver {
             //if not initialized, check all handlers for endorsement
             //this is done before handling the first message as at this point, the repository is running in any case, also if the receiver is part of the repository
             //this allows the handler to check for the repository
-            for (IMessageHandler handler : messageHandlers) {
+            for (IMessageHandler handler : messageHandlers.get()) {
                 LOGGER.trace("Trying to configure handler {}.", handler.getHandlerIdentifier());
                 if (handler.configure()) {
                     LOGGER.trace("Adding handler {} to list of endorsed handlers.", handler.getHandlerIdentifier());
@@ -118,13 +117,13 @@ public class ScheduledMessageReceiver {
         Message msg = null;
         // Receive messages until there is no further message available.
         do {
-            LOGGER.trace("Performing receiveNextMessage() from queue {}.", config.queue().getName());
-            msg = rabbitTemplate.receive(config.queue().getName(), 1000);
+            LOGGER.trace("Performing receiveNextMessage() from queue {}.", consumerConfig.get().queue().getName());
+            msg = rabbitTemplate.get().receive(consumerConfig.get().queue().getName(), 1000);
 
             if (msg != null) {
                 try {
                     BasicMessage message = BasicMessage.fromJson(new String(msg.getBody(), StandardCharsets.UTF_8));
-                    LOGGER.trace("Processing received message using {} registered handler(s).", messageHandlers.length);
+                    LOGGER.trace("Processing received message using {} registered handler(s).", messageHandlers.get().length);
                     boolean messageHandledByOne = false;
                     for (IMessageHandler handler : endorsedHandlers) {
                         LOGGER.trace("Processing message by handler {}.", handler.getClass());
