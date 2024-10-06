@@ -20,7 +20,6 @@ plugins {
     id "io.freefair.maven-publish-java" version "8.10.2"
     id "io.spring.dependency-management" version "1.1.6" 
     id "org.owasp.dependencycheck" version "10.0.4"
-    id "com.jfrog.bintray" version "1.8.5"
     id "java"
     id "jacoco"
     // plugins for release and publishing to maven repo
