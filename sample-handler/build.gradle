@@ -58,5 +58,5 @@ dependencies {
    implementation('edu.kit.datamanager:generic-message-consumer:0.1.0')
 
    // Use JUnit test framework
-   testImplementation 'junit:junit:4.12'
+   testImplementation 'junit:junit:4.13.2'
 }
