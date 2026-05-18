@@ -68,7 +68,6 @@ if (project.hasProperty('deploy')) {
 
 bootJar {
     archiveFileName = 'generic-message-consumer'
-    classifier = 'boot'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
