@@ -41,8 +41,11 @@ repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 1.17
-targetCompatibility = 1.17
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
