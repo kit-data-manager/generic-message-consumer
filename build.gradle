@@ -56,7 +56,7 @@ dependencies {
 
     implementation "edu.kit.datamanager:service-base:1.3.6"
     //driver for h2
-    implementation "com.h2database:h2:2.4.240"
+    implementation "com.h2database:h2:2.5.250"
 
     testImplementation "junit:junit"
 }
